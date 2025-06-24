@@ -1,0 +1,54 @@
+{
+	"name": "oas2msw",
+	"version": "0.1.0",
+	"description": "Generate MSW (Mock Service Worker) handlers from OpenAPI JSON schema",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"bin": {
+		"oas2msw": "dist/cli.js"
+	},
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"lint": "biome lint --write",
+		"format": "biome format --write",
+		"check": "biome check --write",
+		"clean": "rm -rf dist",
+		"prepublishOnly": "npm run clean && npm run build"
+	},
+	"keywords": [
+		"openapi",
+		"msw",
+		"mock",
+		"api",
+		"typescript",
+		"generator"
+	],
+	"author": "ryo-ebata",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ryo-ebata/oas2msw.git"
+	},
+	"bugs": {
+		"url": "https://github.com/ryo-ebata/oas2msw/issues"
+	},
+	"homepage": "https://github.com/ryo-ebata/oas2msw#readme",
+	"dependencies": {
+		"msw": "^2.0.0",
+		"@faker-js/faker": "^8.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^20.0.0",
+		"@types/jest": "^29.0.0",
+		"jest": "^29.0.0",
+		"ts-jest": "^29.0.0",
+		"typescript": "^5.0.0",
+		"@biomejs/biome": "2.0.5"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	}
+}
