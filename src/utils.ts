@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { ErrorSchema, type OpenApiSchema, type SchemaProperty } from "./types";
+import type { OpenApiSchema, SchemaProperty } from "./types";
 
 /**
  * OpenAPIスキーマの参照を解決する

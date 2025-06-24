@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from "fs";
+import { writeFileSync } from "fs";
 import { resolve } from "path";
+import { loadConfig } from "./config/loadConfig";
 import { type CliOptions, generateHandlerCode } from "./index";
+import { showHelp } from "./options/help";
+import { showVersion } from "./options/version";
+import { loadOpenApiSchema } from "./parse";
 
 /**
  * CLIオプションを解析する
@@ -71,70 +75,6 @@ const parseArgs = (): CliOptions => {
 };
 
 /**
- * ヘルプメッセージを表示する
- */
-const showHelp = (): void => {
-	console.log(`
-oas2msw - Generate MSW handlers from OpenAPI JSON schema
-
-Usage: oas2msw [options]
-
-Options:
-  -i, --input <file>        Input OpenAPI JSON file (required)
-  -o, --output <file>       Output TypeScript file (required)
-  --base-url <url>          Base URL for API endpoints
-  --error-rate <rate>       Error response rate (0.0-1.0, default: 0.05)
-  --locale <locale>         Faker.js locale (default: en)
-  --config <file>           Configuration file
-  -h, --help               Show this help message
-  -v, --version            Show version
-
-Examples:
-  oas2msw -i openapi.json -o handlers.ts
-  oas2msw -i openapi.json -o handlers.ts --base-url https://api.example.com
-  oas2msw -i openapi.json -o handlers.ts --error-rate 0.1 --locale ja
-`);
-};
-
-/**
- * バージョン情報を表示する
- */
-const showVersion = (): void => {
-	const packageJson = JSON.parse(
-		readFileSync(resolve(__dirname, "../package.json"), "utf8"),
-	);
-	console.log(`oas2msw v${packageJson.version}`);
-};
-
-/**
- * 設定ファイルを読み込む
- */
-const loadConfig = (configPath?: string): Partial<CliOptions> => {
-	if (!configPath) return {};
-
-	try {
-		const configFile = readFileSync(resolve(configPath), "utf8");
-		return JSON.parse(configFile);
-	} catch (error) {
-		console.error(`Error loading config file: ${error}`);
-		process.exit(1);
-	}
-};
-
-/**
- * OpenAPI JSONファイルを読み込む
- */
-const loadOpenApiSchema = (inputPath: string): any => {
-	try {
-		const fileContent = readFileSync(resolve(inputPath), "utf8");
-		return JSON.parse(fileContent);
-	} catch (error) {
-		console.error(`Error loading OpenAPI schema: ${error}`);
-		process.exit(1);
-	}
-};
-
-/**
  * メイン処理
  */
 const main = (): void => {
@@ -157,11 +97,11 @@ const main = (): void => {
 
 	try {
 		// OpenAPIスキーマを読み込み
-		console.log(`Loading OpenAPI schema from: ${options.input}`);
+		console.info(`Loading OpenAPI schema from: ${options.input}`);
 		const openApiSchema = loadOpenApiSchema(options.input);
 
 		// MSWハンドラーコードを生成
-		console.log("Generating MSW handlers...");
+		console.info("Generating MSW handlers...");
 		const handlerCode = generateHandlerCode(openApiSchema, {
 			baseUrl: options.baseUrl,
 			errorRate: options.errorRate,
@@ -169,10 +109,10 @@ const main = (): void => {
 		});
 
 		// ファイルに出力
-		console.log(`Writing handlers to: ${options.output}`);
+		console.info(`Writing handlers to: ${options.output}`);
 		writeFileSync(resolve(options.output), handlerCode, "utf8");
 
-		console.log("✅ MSW handlers generated successfully!");
+		console.info("✅ MSW handlers generated successfully!");
 	} catch (error) {
 		console.error(`Error generating handlers: ${error}`);
 		process.exit(1);
